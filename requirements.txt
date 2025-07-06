@@ -1,9 +1,10 @@
 fastapi==0.111.0
 uvicorn[standard]==0.30.0
 torch==2.3.0
-diffusers==0.27.2
+diffusers==0.24.0
 transformers==4.42.1
+huggingface_hub==0.29.1      # >=0.23.2 để thoả transformers
 accelerate==0.30.1
 safetensors==0.4.3
 Pillow==10.3.0
-xformers==0.0.26.post1   # tùy GPU; bỏ nếu build CPU-only
+xformers==0.0.26.post1
