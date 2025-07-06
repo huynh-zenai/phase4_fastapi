@@ -1,0 +1,27 @@
+FROM nvidia/cuda:12.2.2-runtime-ubuntu22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1
+
+RUN apt-get update && apt-get install -y python3-pip git && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip3 install --upgrade pip && pip3 install -r requirements.txt
+
+RUN python3 - <<'PY'
+from diffusers import StableDiffusionPipeline
+import torch, os, tempfile, shutil
+tmp = tempfile.mkdtemp()
+StableDiffusionPipeline.from_pretrained(
+    "runwayml/stable-diffusion-v1-5",
+    torch_dtype=torch.float16
+).save_pretrained(tmp)
+shutil.move(tmp, "/weights")
+PY
+
+ENV MODEL_DIR=/weights
+COPY . .
+
+EXPOSE 8000
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
